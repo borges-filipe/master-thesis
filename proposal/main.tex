@@ -1,0 +1,333 @@
+\documentclass[oneside, paper=A4, DIV=15]{scrartcl}
+\usepackage{graphicx, lipsum}
+\usepackage[table, xcdraw]{xcolor}
+\usepackage[backend=biber, style=numeric, maxbibnames=99, sorting=none]{
+    biblatex
+}
+\usepackage[shortlabels]{enumitem}
+\usepackage[normalem]{ulem}
+\usepackage{xcolor}
+
+\addbibresource{references.bib}
+
+\makeatletter
+\def\@maketitle{ \noindent\begin{minipage}{0.05\textwidth}\includegraphics[width=2cm]{logo.png}\end{minipage}%
+\hfill\begin{minipage}{0.90\textwidth}\center{\bfseries\@title}\par\medskip\end{minipage}\vspace{3em}}
+\makeatother
+
+\begin{document}
+    \title{TU Berlin / Faculty IV\\
+    Remote Sensing Image Analysis Group\\
+    \vspace{1em}
+    \huge Proposal for a Master Thesis}
+
+    \maketitle
+
+    \begin{table}[h!]
+        \begin{tabular}{ >{\columncolor[HTML]{FFFFFF}}r >{\columncolor[HTML]{FFFFFF}}l
+        }
+            {\color[HTML]{000000} Type of thesis/ Line of study:} & {\color[HTML]{000000} Master Thesis}                           \\
+            {\color[HTML]{000000} Title of the thesis:}           & {\color[HTML]{000000} Exploring Remote Sensing Hallucinations} \\
+            {\color[HTML]{000000} Candidate:}                     & {\color[HTML]{000000} Fabian Borges, Filipe Alexandre}         \\
+            {\color[HTML]{000000} Matriculation number:}          & {\color[HTML]{000000} 414221}                                  \\
+            {\color[HTML]{000000} Advisor(s):}                    & {\color[HTML]{000000} Golchin, Pegah (Dr.)}                    \\
+            {\color[HTML]{000000} Supervisor(s):}                 & {\color[HTML]{000000} Demir, Begüm (Prof. Dr.)}                \\
+            {\color[HTML]{000000} Planned period:}                & {\color[HTML]{000000} Dec. 2025 until May 2026}
+        \end{tabular}
+    \end{table}
+
+    \section{Introduction / Scientific Background / Related Work}
+
+    % About \(1 / 2\) to a max. of \(1\) page description of the scientific context (including the classification in the literature, projects, ...), of the concrete embedding (e.g. project at RSiM/TU Berlin) and of existing previous work, if any (e.g. results of a student project, predecessor thesis, …). \\
+
+    % Cite like this: \cite{huLeveragingHallucinationsReduce2024}
+
+    The field of Remote Sensing faces a significant imbalance between the amount
+    of available image data and the amount of labeled data \cite{andersonMeasuringMitigatingHallucinations2025}.
+    In 2023, The European Space Agency's Copernicus satellite constellation generated
+    6.8 Petabytes of earth-observation data in just 10 months, more than in the
+    38 years before 2014 (6.8 PB vs 5 PB) \cite{zavrasGAIAGlobalMultimodal2025}.
+    While there is an abundance of image data from satellites and aerial platforms,
+    the availability of high-quality labeled datasets is limited due to the time-consuming
+    and costly nature of manual annotation.
+
+    Large Vision-Language Models (LVLMs) are capable of generating rich textual
+    descriptions of images, making them a promising solution for automated image
+    captioning in Remote Sensing \cite{andersonMeasuringMitigatingHallucinations2025}.
+    A successful example of this is the GAIA dataset, which used GPT-generated captions
+    to create a large-scale dataset \cite{zavrasGAIAGlobalMultimodal2025}.
+
+    However, LVLM-generated captions for Remote Sensing are often generic and
+    contain hallucinations \cite{andersonMeasuringMitigatingHallucinations2025}.
+    A common definition of hallucinations is “content that is nonsensical or unfaithful
+    to the provided source content” \cite{farquharDetectingHallucinationsLarge2024}.
+    Researchers have also explored different causes and types of hallucinations,
+    including co-occurrence, uncertainty and multi-object hallucinations
+    \cite{zhouAnalyzingMitigatingObject2024}, \cite{chenMultiObjectHallucinationVision}.
+    Hallucinatory captions can degrade model performance or directly mislead
+    users who depend on accurate image interpretations
+    \cite{zhouAnalyzingMitigatingObject2024}.
+
+    Hallucination-specific metrics and detection methods have only recently been
+    proposed, showing that the research field is still in its infancy \cite{liEvaluatingObjectHallucination2023},
+    \cite{zhouAnalyzingMitigatingObject2024}. One of these metrics is POPE,
+    which converts hallucination evaluation into a binary classification task
+    \cite{liEvaluatingObjectHallucination2023}. Different detection methods have
+    also been proposed, including a hallucination reviser trained on
+    artificially created hallucinations \cite{zhouAnalyzingMitigatingObject2024}.
+    Training-free methods also exist, such as Visual Contrastive Decoding, which
+    purposefully induces hallucinations to extract internal model presumptions \cite{lengMitigatingObjectHallucinations2024}
+    \cite{huLeveragingHallucinationsReduce2024}.
+
+    Most research has focused on general Computer Vision images, but Remote
+    Sensing images present unique challenges, such as complex backgrounds or imbalance
+    of foreground and background pixel ratios \cite{liInsightAnyInstance2025}.
+    Therefore, significant work remains to explore hallucinations in Remote Sensing
+    and to adapt existing methods to this domain.
+
+    \newpage
+
+    \section{Problem Statement / Goals of the Thesis}
+
+    % About \(1\) page description of the concrete problems addressed as the goals of the thesis, planned/expected results, reference to other thesis, paper, etc., if any.
+
+    % The central problem surrounding this thesis is that the specific nature of
+    % LVLM-generated hallucinations in Remote Sensing is poorly understood. As previously
+    % mentioned, Remote Sensing images differ in important ways from general
+    % Computer Vision images \cite{liInsightAnyInstance2025}. We also know that foundation
+    % LVLMs struggle with Remote Sensing images, their generated text remains
+    % generic and prone to hallucinations \cite{liInsightAnyInstance2025}. Therefore,
+    % we should not assume that methods for detecting hallucinations in general-purpose
+    % images will work on Remote Sensing data without first evaluating them. This lack
+    % of understanding creates two further problems:
+
+    % \begin{enumerate}
+    %     \item A Methods Problem: We lack proven tools to filter or correct
+    %         hallucinations in Remote Sensing-specific captions.
+
+    %     \item A Data Problem: We lack a dedicated dataset of Remote Sensing
+    %         hallucinations, which would be a crucial component for training and evaluating
+    %         mitigation techniques, like reviser models
+    %         \cite{zhouAnalyzingMitigatingObject2024}.
+    % \end{enumerate}
+
+    % Visual Contrastive Decoding (VCD) offers a path to explore these problems. Its
+    % primary advantage is that it does not rely on any prior assumptions about the
+    % nature of Remote Sensing hallucinations. Crucially, instead of treating hallucinations
+    % as mere noise, VCD leverages them as a signal to reveal a model's internal
+    % presumptions. In order of priority, the 4 goals of this thesis are:
+
+    % \begin{enumerate}
+    %     \item To investigate the applicability of Visual Contrastive Decoding as
+    %         a training-free method for inducing LVLM-hallucinations in Remote Sensing.
+
+    %     \item To create a novel dataset of RS-specific hallucinations by leveraging
+    %         the hallucination-inducing aspect of Visual Contrastive Decoding.
+
+    %     \item To evaluate the utility of this new dataset as a metric for hallucination
+    %         detection and as training datset for a dedicated hallucination reviser
+    %         as in \cite{zhouAnalyzingMitigatingObject2024}.
+    % \end{enumerate}
+    % \end{enumerate}
+    % \textbf{Insert Hypothesis Here}
+
+    This thesis will confront two problems present in the field of Remote Sensing.
+    The first problem is cost. Manually captioning the high volume of Remote Sensing
+    image data is prohibitively expensive \cite{andersonMeasuringMitigatingHallucinations2025}.
+    This creates a clear need for high-quality automated captioning, for which LVLMs
+    seem particularly well-suited for \cite{andersonMeasuringMitigatingHallucinations2025}.
+    Consequently, the second problem is that the LVLMs used for this automation produce
+    captions that contain hallucinations \cite{andersonMeasuringMitigatingHallucinations2025}.
+    Currently, very little research exists on Remote Sensing hallucinations,
+    including hallucination detection and mitigation techniques.
+
+    These problems lead directly to the goals of this thesis. The first goal is to
+    improve a Remote Sensing dataset that contains LVLM-generated captions. This
+    will be done by developing a method to detect and remove hallucinations from
+    generated text. Such datasets already exist, such as GAIA, which uses GPT-4o
+    captions and includes images of varying sources and modalities, and Llama3-SSL4EO-S12,
+    containing one million Sentinel-2 samples and Llama3-LLaVA-Next generated captions \cite{zavrasGAIAGlobalMultimodal2025} \cite{marimoVisibleMultispectralVisionLanguage2026}.
+    Removing hallucinations from existing datasets is important as it could
+    increase down-stream task performance and ultimately provide users with more
+    accurate information \cite{zhouAnalyzingMitigatingObject2024}.
+
+    The second goal is to create a new benchmark dataset for hallucination
+    correction. One possibility would be to exploit the first goal by collecting
+    all corrected captions (before and after the correction). This dataset would
+    then contain real examples of LVLM-hallucinations in Remote Sensing. At the moment
+    of writing this proposal, I am not aware of any hallucination detection
+    benchmark datasets in the field of Remote Sensing. This could be beneficial to
+    explore how well different hallucination detection techniques perform in the
+    field of Remote Sensing.
+
+    This thesis will explore a hallucination reviser (a method for correcting
+    captions) and a hallucination detection benchmark (the new dataset
+    containing real labeled hallucinations). These contributions could make
+    existing LVLM captions more reliable and provide new tools for future
+    research.
+
+    \section{Thesis Approach / Plan of Implementation}
+
+    %Methodological and conceptual approach of the thesis and ideas/plans of implementation (about \(1 / 2\) to a max. of \(1\) page).
+
+    % This initial phase will adapt and validate the principles of Visual
+    % Contrastive Decoding as a tool for inducing and identifying plausible, domain-specific
+    % hallucinations in Remote Sensing (RS):
+
+    % \begin{enumerate}
+    %     \item Model and Data Selection:
+    %         \begin{itemize}
+    %             \item Model: A state-of-the-art, open-source LVLM will be selected
+    %                 as the testbed. \textcolor{red}{A model from the LLaVA-Llama
+    %                 3.1 family is a strong candidate due to its open
+    %                 availability and strong baseline performance.}
+
+    %             \item Data: A foundational RS dataset with high-quality ground-truth
+    %                 (GT) object labels or captions will be used.
+    %         \end{itemize}
+
+    %     \item Implementation of the VCD-Probe:
+    %         \begin{itemize}
+    %             \item A Python-based framework will be implemented to run the LVLM.
+    %                 For a given RS image $v$ and a text prompt $x$ (e.g., "In
+    %                 this satellite image, there is a..."), this framework will:
+    %                 \begin{itemize}
+    %                     \item Generate a distorted visual input $v'$ (eg. by applying
+    %                         Gaussian noise).
+
+    %                     \item Perform two forward passes of the model to extract
+    %                         the logits for the original input ($l ogit(y|v, x)$)
+    %                         and the distorted input ($logit(y|v', x)$).
+    %                 \end{itemize}
+
+    %             \item The core "hallucination signal" $S_{hal}$ for any token $H$
+    %                 will be calculated as the difference in these logits. This
+    %                 formalizes Goal 1's "investigation" into a concrete metric:
+    %                 \[
+    %                     S_{hal}(H) = logit(H|v', x) - logit(H|v, x)
+    %                 \]
+
+    %             \item A high $S_{hal}$ score identifies tokens (objects) that are
+    %                 strongly suggested by the model's internal language priors (from
+    %                 $v'$) but are not supported by the actual visual evidence (from
+    %                 $v$).
+    %         \end{itemize}
+    % \end{enumerate}
+
+    % The second phase will consist of scaling the method from Phase 1 to produce
+    % the induced hallucination dataset:
+
+    % \begin{enumerate}
+    %     \item Generation Pipeline: The VCD-probe will be run across a large
+    %         subset of the selected RS dataset. For each (Image $v$, Ground-Truth
+    %         Caption $G$) pair, the pipeline will:
+    %         \begin{itemize}
+    %             \item Identify the top-$k$ plausible hallucination tokens $H_{1},
+    %                 ..., H_{k}$ (e.g., $k=5$) using the $S_{hal}$ metric.
+
+    %             \item Use an LLM (e.g., Llama-3.1-8B-Instruct) to "fluently
+    %                 insert" a chosen hallucination $H$ into the ground-truth caption
+    %                 $G$, creating a new synthetic, hallucinatory caption $G_{H}$.
+    %                 This follows the successful "corruption" methodology of
+    %                 \cite{zhouAnalyzingMitigatingObject2024}.
+    %         \end{itemize}
+
+    %     \item Deliverable: The final dataset will consist of triplets: \texttt{(Image\_ID,
+    %         GroundTruth\_Caption, Hallucinatory\_Caption)}. This dataset will serve
+    %         as the foundation for all evaluations in Phase 3.
+    % \end{enumerate}
+
+    % The final phase will consist of the training and evaluating two distinct mitigation
+    % strategies:
+    % \begin{enumerate}
+    %     \item Utility for Evaluation:
+    %         \begin{itemize}
+    %             \item A second dataset will be created by inserting random co-occurrence
+    %                 objects using an LLVM like in \cite{zhouAnalyzingMitigatingObject2024}
+    %                 into the ground-truth captions.
+
+    %             \item Use different existing caption quality and hallucination specific
+    %                 evaluation metrics on both datatsets.
+
+    %             \item Hypothesis: The evaluation metrics will achieve higher
+    %                 accuracy on the co-occurrence-dataset than the VCD-generated
+    %                 dataset. This would suggest that the new dataset is a more challenging
+    %                 and realistic benchmark for evaluating future detection methods.
+    %         \end{itemize}
+
+    %     \item Utility for Mitigation (Training a Revisor): \begin{itemize}
+
+    %     \item Following the LURE framework, a dedicated RS Revisor ($R_{RS}$)
+    %         will be trained. The LVLM will be fine-tuned on the VCD-generated dataset.
+    %         \begin{itemize}
+    %             \item Input: The image $v$ and the Hallucinatory Caption ($G_{H}$).
+
+    %             \item Target Output: The Ground Truth Caption ($G$). \end{To}
+
+    %             \item Hypothesis: The $R_{RS}$ revisor will significantly
+    %                 outperform a generic revisor in correcting RS-specific
+    %                 hallucinations. This will demonstrate the critical need for domain-specific
+    %                 training data.
+    %         \end{itemize}
+    % \end{enumerate}
+
+    The first phase of this thesis will be an exploration of Visual Contrastive
+    Decoding (VCD) as a tool for hallucination detection. VCD provides a suitable
+    starting point as it is a training-free method and requires little assumptions
+    about Remote Sensing hallucinations \cite{lengMitigatingObjectHallucinations2024}. By comparing the output
+    distributions of original and distorted images, VCD reveals internal biases present
+    in LVLMs. VCD has proven versatile, mitigating hallucinations across different
+    LVLM families. This versatility may be important for Remote Sensing, which uses
+    different LVLMs for varied image types (such as multi-spectral) \cite{marimoVisibleMultispectralVisionLanguage2026}. VCD's
+    efficacy in this domain remains untested.
+
+    The initial work involves implementing a framework to test VCD as a post-hoc
+    hallucination detection mechanism. This framework will allow exploration of different
+    image types, image distortions, and LVLMs.
+
+    A sound starting configuration is:
+
+    \begin{itemize}
+        \item Images: RGB image and gpt-4o generated caption pairs from GAIA. GAIA
+            also contains multispectral images for later exploration \cite{zavrasGAIAGlobalMultimodal2025}.
+
+        \item Distortion: Adding Gaussian white noise, as in the original VCD paper 
+            \cite{lengMitigatingObjectHallucinations2024}.
+
+        \item Model: Llava, chosen for its open-source nature \cite{grattafioriLlama3Herd2024}.
+    \end{itemize}
+
+    Successfully detecting and correcting hallucinations will enable the
+    creation of a new dataset. In this second phase, the original (hallucinated)
+    caption and its corrected version will be collected as a pair.
+
+    The initial proposed workflow for this framework is as follows:
+
+    \begin{enumerate}
+        \item An LLM (e.g., Llama) processes an image's original caption to create
+            a probing prompt. This prompt is designed to elicit a potential
+            object as the next word (e.g., "In the shoreline there are...").
+
+        \item A distorted image is created from the original. Using the LVLM (e.g.,
+            Llava), VCD is performed, contrasting the original and distorted
+            images against the prompt. This yields a list of potential hallucinations.
+
+        \item To confirm a likely hallucination, the LVLM is fed a binary
+            question for each suspected object (e.g., "Is object [X] present in
+            the image?"). This is similar to the POPE evaluation method.
+
+        \item An LLM edits the original caption, removing the confirmed
+            hallucinations to create a revised version.
+
+        \item The original image, the original (hallucinated) caption, and the revised
+            caption are collected to form the new dataset.
+    \end{enumerate}
+
+    One way to evaluate the utility of the revised captions is to fine-tune a model with the original and revised captions separately and compare their captioning performance. If the revised captions lead to better performance, it would indicate that the hallucination removal process was effective. Common evaluation metrics for image captioning, such as BLEU, METEOR, or CIDEr, and hallucination detection metrics such as POPE can also be used directly on the revised captions against ground truth captions to assess improvements in quality.
+
+    % \section{Time Frame}
+
+    %If interesting and enlightening (e.g. cooperation with a company or similar) can be given here a brief overview of the schedule. (can be omitted in case of only 3 or 4 month, does not make so much sense in these short frames).
+
+    \printbibliography
+\end{document}
