@@ -7,6 +7,8 @@
 \usepackage[shortlabels]{enumitem}
 \usepackage[normalem]{ulem}
 \usepackage{xcolor}
+\usepackage{float}
+\usepackage{graphicx}
 
 \addbibresource{references.bib}
 
@@ -102,9 +104,19 @@ An LLM (e.g., Llama) processes an image's original caption to create a probing p
 
 One way to evaluate the utility of the revised captions is to fine-tune a model with the original and revised captions separately and compare their captioning performance. If the revised captions lead to better performance, it would indicate that the hallucination removal process was effective. Common evaluation metrics for image captioning, such as BLEU, METEOR, or CIDEr, and hallucination detection metrics such as POPE can also be used directly on the revised captions against ground truth captions to assess improvements in quality.
 
-% \section{Time Frame}
+\section{Time Frame}
+
+The thesis will be carried out over a period of six months. The following Gantt chart (Figure \ref{fig:schedule}) outlines the estimated schedule for the various phases of the thesis:
+
+\begin{figure}[H]
+  \includegraphics[width=\linewidth]{schedule.png}
+  \caption{Gantt chart showing the planned schedule for the master thesis.}
+  \label{fig:schedule}
+\end{figure}
 
 % If interesting and enlightening (e.g. cooperation with a company or similar) can be given here a brief overview of the schedule. (can be omitted in case of only 3 or 4 month, does not make so much sense in these short frames).
+
+
 
 \printbibliography
 \end{document}
