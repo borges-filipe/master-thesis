@@ -81,28 +81,33 @@ This thesis will explore a hallucination reviser (a method for correcting captio
 
 % Methodological and conceptual approach of the thesis and ideas/plans of implementation (about \(1 / 2\) to a max. of \(1\) page).
 
-The first phase of this thesis will be an exploration of Visual Contrastive Decoding (VCD) as a tool for hallucination detection \cite{lengMitigatingObjectHallucinations2024}. VCD provides a suitable starting point as it is a training-free method and requires little assumptions about Remote Sensing hallucinations \cite{lengMitigatingObjectHallucinations2024}. By comparing the output distributions of original and distorted images, VCD reveals internal biases present in VLMs. VCD has proven versatile, mitigating hallucinations across different VLM families. This versatility may be important for Remote Sensing, which uses different VLMs for varied image types (such as multi-spectral) \cite{marimoVisibleMultispectralVisionLanguage2026}. VCD's efficacy in this domain remains untested.
+% Intro
 
-This work involves implementing a framework to test VCD as a post-hoc hallucination detection mechanism. This framework will allow exploration of different image types, image distortions, and VLMs.
+This thesis will consist of two phases. The first phase will be an exploration of two training-free hallucination detection methods: Semantic Entropy \cite{farquharDetectingHallucinationsLarge2024} and Visual Contrastive Decoding \cite{lengMitigatingObjectHallucinations2024}. In this phase, the performance of these methods will be evaluated on different Remote Sensing datasets with VLM-generated captions. As both methods rely on VLMs, different models will be tested to see how model choice affects detection performance. Detected hallucinations will be collected and revised in order to create a dataset of real hallucinations in Remote Sensing image captions. In the second phase, the created dataset will be used to train a hallucination reviser, following the method proposed by Zhou et al. \cite{zhouAnalyzingMitigatingObject2024}.
 
-A sound starting configuration is:
+\subsection{Hallucination Detection Methods}
 
-\begin{itemize}
-  \item Images: RGB image and gpt-4o generated caption pairs from GAIA. GAIA
-    also contains multispectral images for later exploration \cite{zavrasGAIAGlobalMultimodal2025}.
+\subsubsection{Training-Free Methods}
 
-  \item Distortion: Initially, adding Gaussian white noise, as in the original VCD paper \cite{lengMitigatingObjectHallucinations2024}. Later, the impact of different noise types or distortion techniques would be explored.
-  
-  \item Model: LLaVA (Large Language and Vision Assistant), an end-to-end trained multimodal model connecting a vision encoder to an LLM \cite{liuVisualInstructionTuning2023}. LLaVA is an appropriate choice for three primary reasons. First, as an open-source model, it grants full access to internal logits and token probabilities, which is a strict requirement for the Visual Contrastive Decoding method \cite{lengMitigatingObjectHallucinations2024}. Second, VCD is specifically designed to correct the over-reliance on language priors characteristic of LLMs, such as the one utilized as the decoder in LLaVA \cite{lengMitigatingObjectHallucinations2024}. Third, using LLaVA ensures that results are comparable with the original VCD study where this model was utilized as a representative model to demonstrate performance trajectories \cite{lengMitigatingObjectHallucinations2024}.
-\end{itemize}
+Semantic Entropy and Visual Contrastive Decoding are training-free methods to detect hallucinations. Both estimate uncertainty for singular words or ideas that might be present in a generated caption. Descriptions of complex Remote Sensing images often contain multiple facts. To analyze these, an LLM will decompose each caption into individual facts and generate corresponding questions. These questions serve as the textual input for both detection methods \cite{farquharDetectingHallucinationsLarge2024}.
 
-Successfully detecting and correcting hallucinations will enable the creation of a new dataset. In this second phase, the original (hallucinated) caption and its corrected version will be collected as a pair.
+\paragraph{Semantic Entropy}
+Semantic entropy as introduced in \cite{farquharDetectingHallucinationsLarge2024}, is used as an entropy-based uncertainty estimator for detecting hallucinations in language models. One of the motivations for this method is that a single idea can be expressed in many ways. To address this, entropy is calculated over meaning rather than specific tokens. This method was chosen as it requires no domain or task specific data and was shown to generalize well across different tasks, thus requires no assumptions about Remote Sensing hallucinations \cite{farquharDetectingHallucinationsLarge2024}. The general flow of this method is as follows: For each question generated from one factual claim, prompt the VLM to generate multiple answers and compute the semantic entropy of the answers. The average semantic entropy across all questions is used as the hallucination score for the original factual claim.
 
-The initial proposed workflow for this framework is as follows:
 
-An LLM (e.g., Llama) processes an image's original caption to create a probing prompt, designed to elicit a potential object as the next word (e.g., "In the shoreline there are..."). From the original image, a distorted version is generated. Using the VLM (e.g., LLaVA), VCD is performed by contrasting the original and distorted images against the prompt, yielding a list of potential hallucinations. To confirm a likely hallucination, the VLM is asked a binary question for each suspected object (e.g., "Is object [X] present in the image?"), similar to the POPE evaluation method. Finally, an LLM edits the original caption, removing the confirmed hallucinations to produce a revised version. The original image, the original (hallucinated) caption, and the revised caption are then collected to form the new dataset.
+\paragraph{Visual Contrastive Decoding}
 
-One way to evaluate the utility of the revised captions is to fine-tune a model with the original and revised captions separately and compare their captioning performance. If the revised captions lead to better performance, it would indicate that the hallucination removal process was effective. Common evaluation metrics for image captioning, such as BLEU, METEOR, or CIDEr, and hallucination detection metrics such as POPE can also be used directly on the revised captions against ground truth captions to assess improvements in quality.
+\paragraph{LLM as a judge}
+
+\subsubsection{Trained Method}
+
+\subsection{LVLMs}
+
+\subsection{Datasets}
+
+\subsection{Evaluation Metrics}
+
+%-----------------
 
 \section{Time Frame}
 
@@ -115,8 +120,6 @@ The thesis will be carried out over a period of six months. The following Gantt 
 \end{figure}
 
 % If interesting and enlightening (e.g. cooperation with a company or similar) can be given here a brief overview of the schedule. (can be omitted in case of only 3 or 4 month, does not make so much sense in these short frames).
-
-
 
 \printbibliography
 \end{document}
