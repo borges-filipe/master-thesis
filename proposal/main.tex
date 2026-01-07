@@ -9,6 +9,8 @@
 \usepackage{xcolor}
 \usepackage{float}
 \usepackage{graphicx}
+\usepackage{svg}
+
 
 % \usepackage{etoolbox}
 % \AtBeginEnvironment{quote}{\par\singlespacing\small}
@@ -17,7 +19,7 @@
 
 \makeatletter
 \def\@maketitle{ \noindent
-  \begin{minipage}{0.05\textwidth}\includegraphics[width=2cm]{logo.png}
+  \begin{minipage}{0.05\textwidth}\includegraphics[width=2cm]{figures/logo.png}
   \end{minipage}%
   \hfill
   \begin{minipage}{0.90\textwidth}\center{\bfseries\@title}\par\medskip
@@ -88,9 +90,21 @@ This thesis will explore different hallucination detection and revision methods 
 
 % TODO should I write again why we are correcting VLM generated captions??
 
-This thesis will consist of two phases. The first phase will be an exploration of two training-free hallucination detection methods: Semantic Entropy \cite{farquharDetectingHallucinationsLarge2024} and Visual Contrastive Decoding \cite{lengMitigatingObjectHallucinations2024}. In this phase, the performance of these methods will be evaluated on Remote Sensing datasets with VLM-generated captions. As both methods rely on VLMs, different models will be tested to see how model choice affects detection performance. Detected hallucinations will be collected and revised in order to create a dataset of detected VLM hallucinations in Remote Sensing image captions. In the second phase, the created dataset will be used to train a hallucination reviser similarly to LURE \cite{zhouAnalyzingMitigatingObject2024}.
+This thesis will consist of two phases, both phases are illustrated in Figures \ref{fig:phase1} and \ref{fig:phase2} respectively. The first phase will be an exploration of two training-free hallucination detection methods: Semantic Entropy \cite{farquharDetectingHallucinationsLarge2024} and Visual Contrastive Decoding \cite{lengMitigatingObjectHallucinations2024}. In this phase, the performance of these methods will be evaluated on Remote Sensing datasets with VLM-generated captions. As both methods rely on VLMs, different models will be tested to see how model choice affects detection performance. Detected hallucinations will be collected and revised in order to create a dataset of detected VLM hallucinations in Remote Sensing image captions. In the second phase, the created dataset will be used to train a hallucination reviser similarly to LURE \cite{zhouAnalyzingMitigatingObject2024}.
 
 % TODO add figure illustrating both phases
+
+\begin{figure}[H]
+	\includesvg[width=\linewidth]{figures/phase1.drawio.svg}
+	\caption{Phase 1 of implementation plan including hallucination detection and creation of dataset consisting of detected hallucinatory captions.}
+	\label{fig:phase1}
+\end{figure}
+
+\begin{figure}[H]
+	\includesvg[width=\linewidth]{figures/phase2.drawio.svg}
+	\caption{Phase 2 of implementation plan where the hallucinatory dataset created in the first phase will be used to train a hallucination reviser in the style of LURE \cite{zhouAnalyzingMitigatingObject2024}.}
+	\label{fig:phase2}
+\end{figure}
 
 \subsection{Hallucination Detection Methods}
 
@@ -107,15 +121,10 @@ Semantic Entropy (SE) and Visual Contrastive Decoding (VCD) are training-free me
 
 	\begin{enumerate}
 		\item A plume of glacial dust extends into the Gulf of Alaska.
-
 		\item The glacial dust originates from the Copper River Valley.
-
 		\item The phenomenon was captured by the Visible Infrared Imaging Radiometer Suite (VIIRS) instrument.
-
 		\item The glacial dust is composed of glacial flour.
-
 		\item The glacial flour is rich in iron.
-
 		\item The dust is visible as a distinct brownish streak over the ocean.
 	\end{enumerate}
 \end{quote}
@@ -129,14 +138,14 @@ Similarly to the semantic entropy method, Visual Contrastive Decoding (VCD) is a
 Using both aforementioned methods, a dataset containing hallucinated VLM-generated captions of Remote Sensing images will be created. This dataset could serve as a benchmark for hallucination detection in the field of Remote Sensing. Additionally, the utility as a training dataset for fine-tuning a hallucination reviser will be explored.
 
 \subsubsection{Training a Reviser}
-A hallucination reviser will be trained similarly to the method proposed by Zhou et al.\ \cite{zhouAnalyzingMitigatingObject2024}. In the original method, a training dataset is created by artificially generating hallucinatory captions. Instead of this, the dataset created in the first phase of the thesis, containing detected hallucinations, will be used. An LLM will then be fine-tuned on this dataset to correct hallucinations in captions. This will serve to evaluate the utility of the newly created dataset and allow for a comparison between the training-free and trained hallucination detection methods.
+LURE \cite{zhouAnalyzingMitigatingObject2024} is an existing method for training a hallucination reviser. In LURE, the reviser takes a generated caption with uncertainty tags derived from log-probabilities and produces a revised caption. For training, a dataset was created by artificially generating hallucinatory captions. This required an extensive statistical analysis of VLM-hallucinations in general Computer Vision datasets in order to create realistic hallucinations. Instead of this, the dataset created in the first phase of the thesis (see Figure \ref{fig:phase1}), containing detected hallucinations, will be used. By using detected hallucinations in Remote Sensing imagery, the reviser might directly learn to correct errors common in Remote Sensing captions. An LLM will thus be fine-tuned on this dataset to correct hallucinations. This will serve to evaluate the utility of the newly created dataset as a training dataset for a Remote Sensing hallucination reviser. A sketch of the implementation plan can be seen in Figure \ref{fig:phase2}.
 
 \subsubsection{Effect of VLM choice}
-%TODO add citations
-Both training-free methods rely on VLMs to generate answers to questions derived from factual claims in captions. While both methods show comparable performance across different model families \cite{farquharDetectingHallucinationsLarge2024}, \cite{lengMitigatingObjectHallucinations2024}, no tests were performed in the Remote Sensing domain. Different LVLMs will be tested to see how model choice affects hallucination detection performance. VCD relies on logit distributions, so only LVLMs that provide access to these are viable options. In order to explore different VLM architectures LLaVA-1.5 \cite{liuImprovedBaselinesVisual2024} and Qwen3-VL \cite{baiQwen3VLTechnicalReport2025} will be tested. LLaVA-1.5 employs Vicuna-7B as a language decoder and Qwen3-VL is built on top of Qwen3 LM. GeoChat \cite{kuckrejaGeoChatGroundedLarge2023}, a fine-tuned version of LLaVA-1.5 on Remote Sensing data, will also be evaluated to see if domain-specific fine-tuning improves detection performance.
+Both training-free methods rely on VLMs to generate answers to questions derived from factual claims in captions. While both methods show comparable performance across different model families \cite{farquharDetectingHallucinationsLarge2024}, \cite{lengMitigatingObjectHallucinations2024}, no tests were performed in the Remote Sensing domain. Different VLMs will be tested to see how model choice affects hallucination detection performance. VCD relies on logit distributions, so only VLMs that provide access to these are viable options. In order to explore different VLM architectures LLaVA-1.5 \cite{liuImprovedBaselinesVisual2024} and Qwen3-VL \cite{baiQwen3VLTechnicalReport2025} will be tested. LLaVA-1.5 employs Vicuna-7B as a language decoder and Qwen3-VL is built on top of Qwen3 LM. GeoChat \cite{kuckrejaGeoChatGroundedLarge2023}, a fine-tuned version of LLaVA-1.5 on Remote Sensing data, will also be evaluated to see if domain-specific fine-tuning improves detection performance.
 
 \subsubsection{Evaluating Hallucination Predictions}
-To increase confidence of any hallucination predictions, an LLM-as-a-judge or LLMs-as-a-jury strategy will be employed. Different options will be explored. For example, to confirm a likely hallucination, a VLM is asked a binary question for each suspected object (e.g., ”Is object [X] present in the image?”), similar to the POPE evaluation method \cite{liEvaluatingObjectHallucination2023}. Using multiple VLMs and a voting strategy might improve hallucination detection but also adds complexity, this will be explored throughout the thesis.
+To increase confidence of any hallucination predictions, a VLM-as-a-judge will be employed. Different options will be explored. For example, to confirm a likely hallucination, a VLM is asked a binary question for each suspected object (e.g., "Is object [X] present in the image?"), similar to the POPE evaluation method \cite{liEvaluatingObjectHallucination2023}. Using multiple VLMs and a voting strategy might improve hallucination detection but also adds complexity, this will be explored throughout the thesis.
+% TODO explain better
 
 \subsection{Evaluation}
 One way to evaluate the utility of the revised captions is to fine-tune a model with the original and revised captions separately and compare their captioning performance. If the revised captions lead to better performance, it would indicate that the hallucination removal process was effective. Common evaluation metrics for image captioning, such as BLEU, METEOR, or CIDEr, and hallucination detection metrics such as POPE can also be used directly on the revised captions against ground truth captions to assess improvements in quality.
@@ -148,7 +157,7 @@ One way to evaluate the utility of the revised captions is to fine-tune a model 
 The thesis will be carried out over a period of six months. The following Gantt chart (Figure \ref{fig:schedule}) outlines the estimated schedule for the thesis:
 
 \begin{figure}[H]
-	\includegraphics[width=\linewidth]{schedule.png}
+	\includegraphics[width=\linewidth]{figures/schedule.png}
 	\caption{Gantt chart showing the planned schedule for the master thesis.}
 	\label{fig:schedule}
 \end{figure}
