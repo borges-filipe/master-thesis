@@ -96,13 +96,13 @@ This thesis will consist of two phases, both phases are illustrated in Figures \
 
 \begin{figure}[H]
 	\includesvg[width=\linewidth]{figures/phase1.drawio.svg}
-	\caption{Sketch of phase 1 of implementation plan including hallucination detection and creation of dataset consisting of detected hallucinatory captions.}
+	\caption{Phase 1 of implementation plan including hallucination detection and creation of dataset consisting of detected hallucinatory captions.}
 	\label{fig:phase1}
 \end{figure}
 
 \begin{figure}[H]
 	\includesvg[width=\linewidth]{figures/phase2.drawio.svg}
-	\caption{Sketch of phase 2 of implementation plan where the hallucinatory dataset created in the first phase will be used to train a hallucination reviser in the style of LURE \cite{zhouAnalyzingMitigatingObject2024}.}
+	\caption{Phase 2 of implementation plan where the hallucinatory dataset created in the first phase will be used to train a hallucination reviser in the style of LURE \cite{zhouAnalyzingMitigatingObject2024}.}
 	\label{fig:phase2}
 \end{figure}
 
@@ -139,7 +139,7 @@ Similarly to the semantic entropy method, Visual Contrastive Decoding (VCD) is a
 Using both aforementioned methods, a dataset containing hallucinated VLM-generated captions of Remote Sensing images will be created. This dataset could serve as a benchmark for hallucination detection in the field of Remote Sensing. Additionally, the utility as a training dataset for fine-tuning a hallucination reviser will be explored.
 
 \subsubsection{Training a Reviser}
-LURE \cite{zhouAnalyzingMitigatingObject2024} is an existing method for training a hallucination reviser. In LURE, the reviser takes a generated caption with uncertainty tags derived from log-probabilities and produces a revised caption. For training, a dataset was created by artificially generating hallucinatory captions. This required an extensive statistical analysis of VLM-hallucinations in general Computer Vision datasets in order to create realistic hallucinations. Instead of this, the dataset created in the first phase of the thesis (see Figure \ref{fig:phase1}), containing detected hallucinations, will be used. By using detected hallucinations in Remote Sensing imagery, the reviser might directly learn to correct errors common in Remote Sensing captions. An LLM will thus be fine-tuned on this dataset to correct hallucinations. This will serve to evaluate the utility of the newly created dataset as a training dataset for a Remote Sensing hallucination reviser. A sketch of the implementation plan can be seen in Figure \ref{fig:phase2}.
+LURE \cite{zhouAnalyzingMitigatingObject2024} is an existing method for training a hallucination reviser. In LURE, the reviser takes a generated caption with uncertainty tags derived from log-probabilities and produces a revised caption. For training, a dataset was created by artificially generating hallucinatory captions. This required an extensive statistical analysis of VLM-hallucinations in general Computer Vision datasets in order to create realistic hallucinations. Instead of this, the dataset created in the first phase of the thesis (see Figure \ref{fig:phase1}), containing detected hallucinations, will be used. By using detected hallucinations in Remote Sensing imagery, the reviser might directly learn to correct errors common in Remote Sensing captions. An LLM will thus be fine-tuned on this dataset to correct hallucinations. This will serve to evaluate the utility of the newly created dataset as a training dataset for a Remote Sensing hallucination reviser. A diagram of the implementation plan can be seen in Figure \ref{fig:phase2}.
 
 \subsubsection{Effect of VLM choice}
 Both training-free methods rely on VLMs to generate answers to questions derived from factual claims in captions. While both methods show comparable performance across different model families \cite{farquharDetectingHallucinationsLarge2024}, \cite{lengMitigatingObjectHallucinations2024}, no tests were performed in the Remote Sensing domain. Different VLMs will be tested to see how model choice affects hallucination detection performance. VCD relies on logit distributions, so only VLMs that provide access to these are viable options. In order to explore different VLM architectures LLaVA-1.5 \cite{liuImprovedBaselinesVisual2024} and Qwen3-VL \cite{baiQwen3VLTechnicalReport2025} will be tested. LLaVA-1.5 employs Vicuna-7B as a language decoder and Qwen3-VL is built on top of Qwen3 LM. GeoChat \cite{kuckrejaGeoChatGroundedLarge2023}, a fine-tuned version of LLaVA-1.5 on Remote Sensing data, will also be evaluated to see if domain-specific fine-tuning improves detection performance.
