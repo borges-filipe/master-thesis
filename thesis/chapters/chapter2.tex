@@ -12,10 +12,29 @@ The second main cause for hallucinations are training-related issues that affect
 \subsection{Hallucinations in Vision-Language applications}
 
 \subsubsection{Hallucination Types}
-In Vision-Language, text is generated based on visual input. Images are a fundamentally different medium to text, and as such, the hallucinations that occur in image captioning are different from those that occur in other NLG tasks. Hallucinations can manifest as "judgment" errors to simple questions and as inaccuracies in image descriptions. Errors can be in different visual semantics, such as objects, attributes, relations and position. % Maybe add an example image (RS would be cool)
+In Vision-Language, text is generated based on visual input. Images are a fundamentally different medium to text, and as such, the hallucinations that occur in image captioning are different from those that occur in other NLG tasks. VLM-Hallucinations occur in two different settings: "judgment hallucinations" occur when the response to a user's question contradicts the actual image, "description hallucinations" are failures to faithfully depict the contents of an image. Both types of hallucination can be seen in Figure X. Errors can be in different visual semantics, such as objects, attributes, relations, position and count. Examples of these errors are also depicted in Figure X. Object hallucinations happen when generated text includes objects that do not actually exist in the input image. Attribute hallucinations occur when generated text claims incorrectly assigns a quality, such as color, to an existing object in an image. A relation hallucination is when the relationship between two objects is incorrectly described, for example "the car is to the left of the bicycle" or "the cloud is casting a shadow on the beach". Hallucinations due to count error are when the count of a specific, existing object in an image is wrong, for example, if a generated description states that there are 4 cars in an image when in reality there are only 3.
 
 \subsubsection{Hallucination Causes}
-Object hallucination has been shown to be caused by three primary factors: co-occurrence, uncertainty and text position.
+
+Most of the literature on VLM-Hallucinations has focused on object hallucinations. The two primary causes of object hallucinations in LVLMs are statistical bias and language priors \cite{lengMitigatingObjectHallucinations2024}.
+
+Statistical bias refers to a model's tendency to rely on superficial object correlations and imbalanced distributions found in its vision-language training data. Due to statistical bias, models are more likely to hallucinate objects that are seen often during training. This also leads to co-occurrence hallucinations, models are more likely to hallucinate objects that frequently appear in the same images as other objects. For example, a model might incorrectly hallucinate a "fork" simply because it correctly identified a "dining table" in the image, or hallucinate a "parking lot" because it correctly identified a shopping mall.
+
+
+
+Language priors are inherited by LVLMs from their language model component. Since LLMs are pre-trained on vast amounts of text-only data, they are designed to predict the next word based on linguistic probability rather than visual evidence.
+
+
+For example, Alayrac et al. \cite{alayracFlamingoVisualLanguage2022} show that Large VLMs, when prompted with a question and image pair, hallucinate by producing answers that seem plausible given the text only, but contradict the contents of the given image. Additionally, visual uncertainty, such as unclear or distorted images, can exacerbate the reliance on language priors. Leng et al. \cite{lengMitigatingObjectHallucinations2024} illustrate this with an image of a "black banana". While the LVLM correctly describes the banana as black, it fails to do so when the image is distorted. As the level of visual uncertainty increases, the model increasingly relies on its language priors and favors more conventional banana colors such as "yellow" or "green".
+
+A recent study performed a statistical analysis of key factors underlying object hallucinations: co-occurrence, uncertainty and text position. Uncertainty is the score used to measure a VLM's confidence in generating the next token during decoding. Text position measures how early or late an object appears in generated text. As seen in figure Y, object hallucinations tend to occur among objects that frequently co-occur, objects with a high uncertainty score during decoding and among objects that are generated in the later part of generated text \cite{ICLR2024_fc625e83}. Indeed, high co-occurrence and high uncertainty lead VLMs to hallucination due to over-reliance on statistical bias and language priors. Additionally, models might hallucinate more at the later parts of generated text due to the autoregressive text generation process. While the model starts off by relying on the semantic information present in the image, the information of past hallucinations and increasing uncertainty cause the model to "snowball". Unlike initial halucinations, "snowball hallucinations" occur when the model maintains consistency with past mistakes. \cite{tangSeeingFarClearly2025b}.
+
+
+
+
+
+% Maybe add multi-object hallucination (when models focus on multiple objects)
+% Maybe add examples from visual contrastive decoding techniques
 
 \subsubsection{Hallucination Metrics}
 
