@@ -16,6 +16,10 @@
 \usepackage{scrlayer-scrpage}					% header and footer line
 \usepackage[backend=biber,style=numeric, sorting=none]{biblatex}
 \usepackage{booktabs}
+
+% Make figures stay in place
+\usepackage[section]{placeins}
+
 % set path where images are stored
 \graphicspath{{./img/}}
 %\input{./misc/hyphenation} 					% use this file to set explicit hyphenations (doesn't seem to work correctly)
@@ -65,10 +69,10 @@
 
 \input{./chapters/chapter1}
 \input{./chapters/chapter2}
-\input{./chapters/chapter3}
-\input{./chapters/chapter4}
-\input{./chapters/chapter5}
-\input{./chapters/chapter6}
+% \input{./chapters/chapter3}
+% \input{./chapters/chapter4}
+% \input{./chapters/chapter5}
+% \input{./chapters/chapter6}
 
 % ---------------------------------------------------------------
 \backmatter % no page numbering from here
