@@ -59,15 +59,15 @@ A recent study performed a statistical analysis of key factors underlying object
 
 \begin{figure}[!h]
 	\centering
-	\subfloat[Co-occurrence\label{fig:co-occur}]{%
+	\subfloat[\label{fig:co-occur}]{%
 		\includegraphics[width=0.32\textwidth]{img/chapter2/co_occurrence_distribution.pdf}
 	}
 	\hfill
-	\subfloat[Uncertainty\label{uncertainty}]{%
+	\subfloat[\label{uncertainty}]{%
 		\includegraphics[width=0.33\textwidth]{img/chapter2/uncertainty_distribution.pdf}
 	}
 	\hfill
-	\subfloat[Object Position\label{position}]{%
+	\subfloat[\label{position}]{%
 		\includegraphics[width=0.33\textwidth]{img/chapter2/position_distribution.pdf}
 	}
 	\caption{Comparison between hallucinatory and non-hallucinatory captions under different factors \cite{andersonMeasuringMitigatingHallucinations2025}.}
@@ -85,6 +85,12 @@ A recent study performed a statistical analysis of key factors underlying object
 \subsubsection{Hallucination Metrics}
 
 \subsubsection{Hallucination Mitigation}
+
+There are broadly three ways to reduce hallucinations. First, improve training to fix priors and decrease statistical bias. Second, provide better input. This lowers the uncertainty that drives over-reliance on language priors. Finally, leverage hallucinations to extract and circumvent those priors.
+
+
+
+
 
 % \section{XXX \label{sec:ch2xxx}}
 
