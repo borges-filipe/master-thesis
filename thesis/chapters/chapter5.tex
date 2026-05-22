@@ -1,8 +1,199 @@
 \chapter{Experimental Results\label{cha:chapter5}}
 This chapter describes the implementation of component X.
 
-\section{Results of the XX\label{sec:ch5xx}}
+\section{VLM hallucination detection performance}
 
-\section{Results of the YY\label{sec:ch5yy}}
+% Research questions
+\begin{formal}
+	Are VLMs capable of detecting object hallucinations in Remote Sensing captions?
+\end{formal}
 
-\section{Results of the ZZ\label{sec:ch5zz}}
+\subsection{Binary questions for hallucination detection}
+
+% Research questions
+\begin{formal}{}
+	Do binary questions on extracted objects successfully detect hallucinations?
+\end{formal}
+
+\subsubsection{Baseline performance}
+\begin{table}[htb] \caption{Baseline performance of binary hallucination detection.} \centering
+	\centering
+	\begin{tabular}{llllllll} % No vertical lines
+		\toprule
+		Dataset & Model     & Model Size & Precision & Recall & F1-Score & Accuracy & Yes Ratio \\
+		\midrule
+		        & LLaVA 1.5 & 7B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
+		LID     & RS-LLaVA  & 7B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
+		        & Qwen3-VL  & 8B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
+		\midrule
+		        & LLaVA 1.5 & 7B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
+		LID     & RS-LLaVA  & 7B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
+		        & Qwen3-VL  & 8B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
+		\midrule
+		        & LLaVA 1.5 & 7B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
+		LID     & RS-LLaVA  & 7B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
+		        & Qwen3-VL  & 8B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
+		\bottomrule
+	\end{tabular}
+	\label{tab:enghistory_clean}
+\end{table}
+
+\FloatBarrier
+\subsubsection{Threshold optimization}
+\begin{figure}[!h]
+	\centering
+	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
+	% 	\resizebox{\linewidth}{!}{%
+	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
+	% 	}
+	\caption{2x3 Violin plot and line plot for binary detection using LLaVA 1.5 for all 3 datasets.}
+	% \label{fig:test}
+\end{figure}
+
+\begin{figure}[!h]
+	\centering
+	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
+	% 	\resizebox{\linewidth}{!}{%
+	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
+	% 	}
+	\caption{2x3 Violin plot and line plot for binary detection using RS-LLaVA for all 3 datasets.}
+	% \label{fig:test}
+\end{figure}
+
+\begin{figure}[!h]
+	\centering
+	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
+	% 	\resizebox{\linewidth}{!}{%
+	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
+	% 	}
+	\caption{2x3 Violin plot and line plot for binary detection using Qwen3-VL for all 3 datasets.}
+	% \label{fig:test}
+\end{figure}
+
+\FloatBarrier
+\subsection{Binary questions vs Multiple Choice Questions}
+
+% Research questions
+\begin{formal}
+	Are Multiple choice questions with multiple objects more suited for hallucination detection than single object binary questions?
+\end{formal}
+
+\FloatBarrier
+\subsection{Effect of VCD on hallucination detection using binary questions}
+
+% Research questions
+\begin{formal}
+	Does VCD improve VLM hallucination detection?
+\end{formal}
+
+\begin{figure}[!h]
+	\centering
+	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
+	% 	\resizebox{\linewidth}{!}{%
+	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
+	% 	}
+	\caption{Line plot for binary detection using VCD with the best performing model over $\alpha$ (alpha dictates the weight of VCD).}
+	% \label{fig:test}
+\end{figure}
+
+\FloatBarrier
+\subsubsection{Effect of different distortion techniques on VCD performance}
+
+\begin{formal}
+	Are certain image distortions more suitable for performing VCD on Remote Sensing images?
+\end{formal}
+
+% gaussian noise
+\begin{figure}[!h]
+	\centering
+	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
+	% 	\resizebox{\linewidth}{!}{%
+	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
+	% 	}
+	\caption{Line plot of binary detection using VCD with varying levels of gaussian noise}
+	% \label{fig:test}
+\end{figure}
+% speckle
+\begin{figure}[!h]
+	\centering
+	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
+	% 	\resizebox{\linewidth}{!}{%
+	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
+	% 	}
+	\caption{Line plot of binary detection using VCD with varying levels of speckle}
+	% \label{fig:test}
+\end{figure}
+% masking
+\begin{figure}[!h]
+	\centering
+	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
+	% 	\resizebox{\linewidth}{!}{%
+	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
+	% 	}
+	\caption{Line plot of binary detection using VCD with varying levels of masking}
+	% \label{fig:test}
+\end{figure}
+
+\begin{figure}[!h]
+	\centering
+	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
+	% 	\resizebox{\linewidth}{!}{%
+	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
+	% 	}
+	\caption{Line plot of binary detection using VCD with varying levels of masking}
+	% \label{fig:test}
+\end{figure}
+
+\begin{table}[htb] \caption{Performance comparison of different masking strategies from ColorMAE} \centering
+\end{table}
+
+\FloatBarrier
+
+\subsection{Semantic entropy performance}
+
+\begin{formal}
+	Is Semantic Entropy a viable strategy for rejecting hallucinations for Remote Sensing images?
+\end{formal}
+
+\subsubsection{Semantic entropy for VQA hallucination detection}
+
+\begin{formal}
+	Is Semantic Entropy a viable strategy for rejecting hallucinations for Remote Sensing VQA?
+\end{formal}
+
+\begin{table}[htb] \caption{Performance of semantic entropy for VQA questions of DDFAV} \centering
+\end{table}
+
+\FloatBarrier
+\subsubsection{Semantic entropy for hallucination detection in captions}
+
+\begin{formal}
+	Is Semantic Entropy a viable strategy for rejecting hallucinations for Remote Sensing captions?
+\end{formal}
+
+\begin{table}[htb] \caption{Performance of semantic entropy for captions of dataset ???} \centering
+\end{table}
+
+\section{New hallucination dataset}
+
+\FloatBarrier
+\subsection{Detection performance difference between real and artificial hallucinations}
+
+\begin{formal}
+	Is Semantic Entropy a viable strategy for rejecting hallucinations for Remote Sensing captions?
+\end{formal}
+
+\begin{table}[htb] \caption{Hallucination detection on LID (real tagged hallucinations) vs RSTeller (artificial hallucinations)} \centering
+\end{table}
+
+\begin{table}[htb] \caption{Hallucination detection on LID (real tagged hallucinations) vs LID (artificial hallucinations)} \centering
+\end{table}
+
+\begin{table}[htb] \caption{Hallucination detection on new dataset (real tagged hallucinations) vs new dataset (artificial hallucinations)} \centering
+\end{table}
+
+\FloatBarrier
+\subsection{Corrected caption quality}
+\begin{formal}
+	Does a trained reviser create better quality corrected captions than zero-shot VLMs?
+\end{formal}

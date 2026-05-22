@@ -16,9 +16,24 @@
 \usepackage{scrlayer-scrpage}					% header and footer line
 \usepackage[backend=biber,style=numeric, sorting=none]{biblatex}
 \usepackage{booktabs}
+\usepackage{pgf}
 
 % Make figures stay in place
 \usepackage[section]{placeins}
+
+% For colorful boxes:
+\usepackage[most]{tcolorbox}
+% \usepackage[svgnames]{xcolor}
+
+\newtcolorbox{formal}[1][]{%
+    colback=cyan!5,
+    boxrule=0pt,
+    boxsep=0pt,
+    breakable,
+    enhanced jigsaw,
+    borderline west={4pt}{0pt}{cyan},
+    #1,
+}
 
 % set path where images are stored
 \graphicspath{{./img/}}
@@ -69,9 +84,9 @@
 
 \input{./chapters/chapter1}
 \input{./chapters/chapter2}
-% \input{./chapters/chapter3}
-% \input{./chapters/chapter4}
-% \input{./chapters/chapter5}
+\input{./chapters/chapter3}
+\input{./chapters/chapter4}
+\input{./chapters/chapter5}
 % \input{./chapters/chapter6}
 
 % ---------------------------------------------------------------

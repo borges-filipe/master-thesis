@@ -1,0 +1,18 @@
+[0] Config.pm:328> INFO - This is Biber 2.21
+[0] Config.pm:331> INFO - Logfile is '.out/DiplomarbeitLaTex.blg'
+[20] biber-darwin:342> INFO - === Thu May 14, 2026, 11:33:55
+[25] Biber.pm:421> INFO - Reading '.out/DiplomarbeitLaTex.bcf'
+[47] Biber.pm:1002> INFO - Found 19 citekeys in bib section 0
+[51] Biber.pm:4487> INFO - Processing section 0
+[54] Biber.pm:4678> INFO - Looking for bibtex file 'references.bib' for section 0
+[55] bibtex.pm:1713> INFO - LaTeX decoding ...
+[80] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
+[175] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[175] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[175] Biber.pm:4307> INFO - Sorting list 'none/global//global/global/global' of type 'entry' with template 'none' and locale 'en-US'
+[175] Biber.pm:4313> INFO - No sort tailoring available for locale 'en-US'
+[181] bbl.pm:676> INFO - Writing '.out/DiplomarbeitLaTex.bbl' with encoding 'latin1'
+[189] bbl.pm:779> INFO - Output to .out/DiplomarbeitLaTex.bbl
+[189] Biber.pm:132> WARN - Possible typo (case mismatch) between datasource keys: 'papineniBleuMethodAutomatic2002' and 'papineniBLEUMethodAutomatic2002' in file 'references.bib'
+[189] Biber.pm:132> WARN - ISBN '978-3-319-46453-4 978-3-319-46454-1' in entry 'andersonSPICESemanticPropositional2016' is invalid - run biber with '--validate_datamodel' for details.
+[189] Biber.pm:134> INFO - WARNINGS: 2
