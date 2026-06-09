@@ -1,6 +1,4 @@
 \chapter{Experimental Results\label{cha:chapter5}}
-This chapter describes the implementation of component X.
-
 \section{VLM hallucination detection performance}
 
 % Research questions
@@ -16,59 +14,347 @@ This chapter describes the implementation of component X.
 \end{formal}
 
 \subsubsection{Baseline performance}
-\begin{table}[htb] \caption{Baseline performance of binary hallucination detection.} \centering
+
+\textbf{Experimental Setting:} RS-Pope used as a benchmark. RS-Pope has balanced probing questions regarding objects, for example "Is there a building in the image". There are 3 difficulty levels in RS-Pope, here only the hardest one ("adversarial") was used. The questions for which the answer is "no" are treated as hallucinations. As the goal is to detect hallucinations, correctly answering "no" to a question is treated as a True Positive. The full prompt used is:
+
+"Is there a \{object\} in the image?
+
+A) Yes
+
+B) No
+
+Letter:"
+
+
+\begin{table}[htb] \caption{Baseline performance of binary hallucination detection with decision threshold fixed at 0.5 confidence score.} \centering
 	\centering
-	\begin{tabular}{llllllll} % No vertical lines
+	\begin{tabular}{llllllllll} % No vertical lines
 		\toprule
-		Dataset & Model     & Model Size & Precision & Recall & F1-Score & Accuracy & Yes Ratio \\
+		Dataset          & Model     & Size & Precision      & Recall         & F1-Score       & Accuracy       & Yes Ratio & ROC-AUC         & AP              \\
 		\midrule
-		        & LLaVA 1.5 & 7B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
-		LID     & RS-LLaVA  & 7B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
-		        & Qwen3-VL  & 8B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
+		                 & LLaVA 1.5 & 7B   & 0.898          & 0.654          & 0.757          & 0.751          & 0.569     & 0.8794          & 0.9081          \\
+		RSPOPE           & RS-LLaVA  & 7B   & 0.789          & 0.816          & 0.802          & 0.762          & 0.388     & 0.8482          & 0.8690          \\
+		                 & Qwen3-VL  & 8B   & 0.858          & \textbf{0.826} & \textbf{0.842} & \textbf{0.816} & 0.430     & 0.9017          & 0.9193          \\
+		                 & Qwen3.5   & 9B   & \textbf{0.926} & 0.699          & 0.797          & 0.789          & 0.336     & \textbf{0.9177} & \textbf{0.9201} \\
 		\midrule
-		        & LLaVA 1.5 & 7B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
-		LID     & RS-LLaVA  & 7B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
-		        & Qwen3-VL  & 8B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
-		\midrule
-		        & LLaVA 1.5 & 7B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
-		LID     & RS-LLaVA  & 7B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
-		        & Qwen3-VL  & 8B         & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
+		                 & LLaVA 1.5 & 7B   & 0.900          & 0.079          & 0.2445         & 0.521          & 0.955     & 0.7374          & 0.7597          \\
+		LID$_{balanced}$ & RS-LLaVA  & 7B   & 0.824          & 0.307          & 0.447          & 0.609          & 0.808     & 0.7747          & 0.7872          \\
+		                 & Qwen3-VL  & 8B   & 0.921          & \textbf{0.461} & \textbf{0.614} & \textbf{0.702} & 0.743     & \textbf{0.8680} & 0.8594          \\
+		                 & Qwen3.5   & 9B   & \textbf{0.955} & 0.2481         & 0.434          & 0.623          & 0.849     & 0.8497          & \textbf{0.8621} \\
+		% \midrule
+		%                & LLaVA 1.5 & 7B   & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
+		% LID            & RS-LLaVA  & 7B   & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
+		%                & Qwen3-VL  & 8B   & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
+		%                & Qwen3.5   & 9B   & 0.5       & 0.5    & 0.5      & 0.5      & 0.5       \\
 		\bottomrule
 	\end{tabular}
 	\label{tab:enghistory_clean}
 \end{table}
 
-\FloatBarrier
-\subsubsection{Threshold optimization}
-\begin{figure}[!h]
+
+\begin{figure}[p]
 	\centering
-	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
-	% 	\resizebox{\linewidth}{!}{%
-	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
-	% 	}
-	\caption{2x3 Violin plot and line plot for binary detection using LLaVA 1.5 for all 3 datasets.}
-	% \label{fig:test}
+
+	% ================= ROW 1: Score Distribution =================
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/llava/ab_rspope/plot1_score_distribution.pgf}%
+		}
+		\caption{LLaVA 1.5 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/rs-llava/ab_rspope/plot1_score_distribution.pgf}%
+		}
+		\caption{RS-LLaVA 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3-8b/ab_rspope/plot1_score_distribution.pgf}%
+		}
+		\caption{Qwen3-VL 8B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3.5/ab_rspope/plot1_score_distribution.pgf}%
+		}
+		\caption{Qwen3.5 9B}
+	\end{subfigure}
+
+	\vspace{1em} % Vertical buffer between rows
+
+	% ================= ROW 2: Class Ratio =================
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/llava/ab_rspope/plot2_class_ratio.pgf}%
+		}
+		\caption{LLaVA 1.5 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/rs-llava/ab_rspope/plot2_class_ratio.pgf}%
+		}
+		\caption{RS-LLaVA 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3-8b/ab_rspope/plot2_class_ratio.pgf}%
+		}
+		\caption{Qwen3-VL 8B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3.5/ab_rspope/plot2_class_ratio.pgf}%
+		}
+		\caption{Qwen 3.5 9B}
+	\end{subfigure}
+
+	\vspace{1em}
+
+	% ================= ROW 3: PR Curve =================
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/llava/ab_rspope/plot3_pr_curve.pgf}%
+		}
+		\caption{LLaVA 1.5 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/rs-llava/ab_rspope/plot3_pr_curve.pgf}%
+		}
+		\caption{RS-LLaVA 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3-8b/ab_rspope/plot3_pr_curve.pgf}%
+		}
+		\caption{Qwen3-VL 8B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3.5/ab_rspope/plot3_pr_curve.pgf}%
+		}
+		\caption{Qwen3.5 9B}
+	\end{subfigure}
+
+	\vspace{1em}
+
+	% ================= ROW 4: ROC Curve =================
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/llava/ab_rspope/plot4_roc_curve.pgf}%
+		}
+		\caption{LLaVA 1.5 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/rs-llava/ab_rspope/plot4_roc_curve.pgf}%
+		}
+		\caption{RS-LLaVA 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3-8b/ab_rspope/plot4_roc_curve.pgf}%
+		}
+		\caption{Qwen3-VL 8B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.240\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3.5/ab_rspope/plot4_roc_curve.pgf}%
+		}
+		\caption{Qwen3.5 9B}
+	\end{subfigure}
+
+	\caption{\textbf{RS-Pope Performance Evaluation across models.} Row 1: Raw score distribution and separation. Row 2: Class ratio (threshold: $0.5$). Row 3: Precision-Recall (PR) Curves. Row 4: Receiver Operating Characteristic (ROC) Curves. \textcolor{red}{TODO: Leave only histogram and ROC}}
+	\label{fig:rspope-all-metrics}
 \end{figure}
 
-\begin{figure}[!h]
-	\centering
-	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
-	% 	\resizebox{\linewidth}{!}{%
-	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
-	% 	}
-	\caption{2x3 Violin plot and line plot for binary detection using RS-LLaVA for all 3 datasets.}
-	% \label{fig:test}
-\end{figure}
+% ========================================================
+%
+%
+% ========================================================
 
-\begin{figure}[!h]
+\clearpage
+
+\begin{figure}[p] % [p] strongly encourages LaTeX to put this on its own dedicated page
 	\centering
-	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
-	% 	\resizebox{\linewidth}{!}{%
-	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
-	% 	}
-	\caption{2x3 Violin plot and line plot for binary detection using Qwen3-VL for all 3 datasets.}
-	% \label{fig:test}
+
+	% ================= ROW 1: Score Distribution =================
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/llava/lid/plot1_score_distribution.pgf}%
+		}
+		\caption{LLaVA 1.5 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/rs-llava/lid/plot1_score_distribution.pgf}%
+		}
+		\caption{RS-LLaVA 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3-8b/lid/plot1_score_distribution.pgf}%
+		}
+		\caption{Qwen3-VL 8B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3.5/lid/plot1_score_distribution.pgf}%
+		}
+		\caption{Qwen3.5 9B}
+	\end{subfigure}
+
+	\vspace{1em} % Vertical buffer between rows
+
+	% ================= ROW 2: Class Ratio =================
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/llava/lid/plot2_class_ratio.pgf}%
+		}
+		\caption{LLaVA 1.5 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/rs-llava/lid/plot2_class_ratio.pgf}%
+		}
+		\caption{RS-LLaVA 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3-8b/lid/plot2_class_ratio.pgf}%
+		}
+		\caption{Qwen3-VL 8B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3.5/lid/plot2_class_ratio.pgf}%
+		}
+		\caption{Qwen 3.5 9B}
+	\end{subfigure}
+
+	\vspace{1em}
+
+	% ================= ROW 3: PR Curve =================
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/llava/lid/plot3_pr_curve.pgf}%
+		}
+		\caption{LLaVA 1.5 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/rs-llava/lid/plot3_pr_curve.pgf}%
+		}
+		\caption{RS-LLaVA 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3-8b/lid/plot3_pr_curve.pgf}%
+		}
+		\caption{Qwen3-VL 8B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3.5/lid/plot3_pr_curve.pgf}%
+		}
+		\caption{Qwen3.5 9B}
+	\end{subfigure}
+
+	\vspace{1em}
+
+	% ================= ROW 4: ROC Curve =================
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/llava/lid/plot4_roc_curve.pgf}%
+		}
+		\caption{LLaVA 1.5 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/rs-llava/lid/plot4_roc_curve.pgf}%
+		}
+		\caption{RS-LLaVA 7B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3-8b/lid/plot4_roc_curve.pgf}%
+		}
+		\caption{Qwen3-VL 8B}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.24\textwidth}
+		\centering
+		\resizebox{\linewidth}{!}{%
+			\input{img/chapter5/qwen3.5/lid/plot4_roc_curve.pgf}%
+		}
+		\caption{Qwen3.5 9B}
+	\end{subfigure}
+
+	\caption{\textbf{LID Performance Evaluation across models.} Row 1: Raw score distribution and separation. Row 2: Class ratio (threshold: $0.5$). Row 3: Precision-Recall (PR) Curves. Row 4: Receiver Operating Characteristic (ROC) Curves. \textcolor{red}{TODO: Leave only histogram and ROC}}
+	\label{fig:lid-all-metrics}
 \end{figure}
+% \subsubsection{Threshold optimization}
+
+% \begin{figure}[!h]
+% 	\centering
+% 	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
+% 	% 	\resizebox{\linewidth}{!}{%
+% 	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
+% 	% 	}
+% 	\caption{2x3 Violin plot and line plot for binary detection using LLaVA 1.5 for all 3 datasets.}
+% 	% \label{fig:test}
+% \end{figure}
+
+% \begin{figure}[!h]
+% 	\centering
+% 	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
+% 	% 	\resizebox{\linewidth}{!}{%
+% 	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
+% 	% 	}
+% 	\caption{2x3 Violin plot and line plot for binary detection using RS-LLaVA for all 3 datasets.}
+% 	% \label{fig:test}
+% \end{figure}
+
+% \begin{figure}[!h]
+% 	\centering
+% 	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
+% 	% 	\resizebox{\linewidth}{!}{%
+% 	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
+% 	% 	}
+% 	\caption{2x3 Violin plot and line plot for binary detection using Qwen3-VL for all 3 datasets.}
+% 	% \label{fig:test}
+% \end{figure}
 
 \FloatBarrier
 \subsection{Binary questions vs Multiple Choice Questions}
@@ -86,67 +372,64 @@ This chapter describes the implementation of component X.
 	Does VCD improve VLM hallucination detection?
 \end{formal}
 
-\begin{figure}[!h]
-	\centering
-	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
-	% 	\resizebox{\linewidth}{!}{%
-	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
-	% 	}
-	\caption{Line plot for binary detection using VCD with the best performing model over $\alpha$ (alpha dictates the weight of VCD).}
-	% \label{fig:test}
-\end{figure}
+% \textbf{Experimental setting:} The same RS-Pope benchmark is used. VCD is used to update the logits. Below the plots are using the same parameters as the original paper.
 
-\FloatBarrier
+
 \subsubsection{Effect of different distortion techniques on VCD performance}
 
 \begin{formal}
 	Are certain image distortions more suitable for performing VCD on Remote Sensing images?
 \end{formal}
 
+\begin{todo}
+	TODO:
+	\begin{easylist}
+		& Add baseline (no VCD) to all figures
+		& Combine Figures 5.5, 5.6, 5.7, and 5.8 into a single figure with subplots for easier comparison across models.
+	\end{easylist}
+\end{todo}
 % gaussian noise
-\begin{figure}[!h]
-	\centering
-	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
-	% 	\resizebox{\linewidth}{!}{%
-	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
-	% 	}
-	\caption{Line plot of binary detection using VCD with varying levels of gaussian noise}
-	% \label{fig:test}
-\end{figure}
+
 % speckle
 \begin{figure}[!h]
 	\centering
-	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
+	\includegraphics[width=0.95\linewidth]{img/chapter5/vcd/model_summary_llava_1_5_auroc_aurac.pdf}
 	% 	\resizebox{\linewidth}{!}{%
 	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
 	% 	}
-	\caption{Line plot of binary detection using VCD with varying levels of speckle}
-	% \label{fig:test}
-\end{figure}
-% masking
-\begin{figure}[!h]
-	\centering
-	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
-	% 	\resizebox{\linewidth}{!}{%
-	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
-	% 	}
-	\caption{Line plot of binary detection using VCD with varying levels of masking}
+	\caption{\textbf{LLaVA 1.5: Effect of distortion types on VCD performance} Fixed parameters: $\alpha=1$, $\beta=0.2$}
 	% \label{fig:test}
 \end{figure}
 
 \begin{figure}[!h]
 	\centering
-	% \includegraphics[width=0.7\linewidth]{img/placeholder_plot.png}
+	\includegraphics[width=0.95\linewidth]{img/chapter5/vcd/model_summary_rs_llava_auroc_aurac.pdf}
 	% 	\resizebox{\linewidth}{!}{%
 	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
 	% 	}
-	\caption{Line plot of binary detection using VCD with varying levels of masking}
+	\caption{\textbf{RS-LLaVA: Effect of distortion types on VCD performance} Fixed parameters: $\alpha=1$, $\beta=0.2$}
 	% \label{fig:test}
 \end{figure}
 
-\begin{table}[htb] \caption{Performance comparison of different masking strategies from ColorMAE} \centering
-\end{table}
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.95\linewidth]{img/chapter5/vcd/model_summary_qwen3_vl_auroc_aurac.pdf}
+	% 	\resizebox{\linewidth}{!}{%
+	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
+	% 	}
+	\caption{\textbf{Qwen3-VL: Effect of distortion types on VCD performance} Fixed parameters: $\alpha=1$, $\beta=0.2$}
+	% \label{fig:test}
+\end{figure}
 
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.95\linewidth]{img/chapter5/vcd/model_summary_qwen3_5_auroc_aurac.pdf}
+	% 	\resizebox{\linewidth}{!}{%
+	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
+	% 	}
+	\caption{\textbf{Qwen3.5: Effect of distortion types on VCD performance} Fixed parameters: $\alpha=1$, $\beta=0.2$}
+	% \label{fig:test}
+\end{figure}
 \FloatBarrier
 
 \subsection{Semantic entropy performance}
@@ -162,6 +445,18 @@ This chapter describes the implementation of component X.
 \end{formal}
 
 \begin{table}[htb] \caption{Performance of semantic entropy for VQA questions of DDFAV} \centering
+\end{table}
+
+\begin{table}[htb] \caption{Performance of Semantic Entropy of Object VQA hallucination detection} \centering
+	\centering
+	\begin{tabular}{llllllll} % No vertical lines
+		\toprule
+		Dataset & Model   & Total Samples & Base Accuracy & AUROC  & AURAC  & Max F1 & Max Rejection F1 \\
+		\midrule
+		RSPOPE  & Qwen3.5 & 3877          & 0.6312        & 0.7673 & 0.8080 & 0.8019 & 0.6318           \\
+		\bottomrule
+	\end{tabular}
+	\label{tab:semantic_entropy_object_vqa }
 \end{table}
 
 \FloatBarrier

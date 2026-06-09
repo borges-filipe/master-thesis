@@ -6,24 +6,27 @@
 \usepackage{mathptmx}
 \usepackage[ngerman, english]{babel}
 \usepackage{bibgerm}       		% german references
-\usepackage[latin1]{inputenc} % german characters
+% \usepackage[latin1]{inputenc} % german characters
+\usepackage[utf8]{inputenc}
 \usepackage{csquotes}
 \usepackage{graphicx} 				% it's recommended to use PDF images but you can use JPG or PNG as well
 \usepackage{url}           		% format URLs
 \usepackage{hyperref} 				% create hyperlinks
 \usepackage{listings, color}	% for source code
-\usepackage{subfig}						% two figures next to each other (example: figure 3a), figure 3b)
 \usepackage{scrlayer-scrpage}					% header and footer line
 \usepackage[backend=biber,style=numeric, sorting=none]{biblatex}
 \usepackage{booktabs}
 \usepackage{pgf}
-
+\usepackage{subcaption}
+\usepackage[ampersand]{easylist}
 % Make figures stay in place
 \usepackage[section]{placeins}
 
 % For colorful boxes:
 \usepackage[most]{tcolorbox}
 % \usepackage[svgnames]{xcolor}
+
+\def\mathdefault#1{#1} % Fix pgf bug
 
 \newtcolorbox{formal}[1][]{%
     colback=cyan!5,
@@ -32,6 +35,16 @@
     breakable,
     enhanced jigsaw,
     borderline west={4pt}{0pt}{cyan},
+    #1,
+}
+
+\newtcolorbox{todo}[1][]{%
+    colback=red!5,
+    boxrule=0pt,
+    boxsep=0pt,
+    breakable,
+    enhanced jigsaw,
+    borderline west={4pt}{0pt}{red},
     #1,
 }
 
