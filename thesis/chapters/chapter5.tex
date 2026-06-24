@@ -6,6 +6,17 @@
 	Are VLMs capable of detecting object hallucinations in Remote Sensing captions?
 \end{formal}
 
+\subsubsection{Dataset and evaluation metrics}
+
+\begin{description}
+	\item \textbf{RS-Pope}, the Remote Sensing Polling-based Object Probing Evaluation, is a benchmark dataset for evaluating object hallucination in Remote Sensing. Based on POPE's approach, VLMs are queried with a binary question regarding the existence of an object in an image (e.g. "Is there a \textit{tree} in the image?"). The ratio between questions is balanced, 50\% regarding visible and 50\% regarding non-visible objects.
+	      The non-existing objects were sampled with three distinct sampling strategies: random sampling, popular sampling based on the top most common objects in the dataset, and adversarial sampling based on object co-occurrence. Additionally, the dataset provides 3 levels of difficulty, which pertains to how many objects are present in a given image: easy, medium and hard. In this experiment the "hard" subset with adversarial sampling was used, with 100 images and a total of 1000 object-probing questions.
+
+	\item \textbf{LID}, the Labelled Illusion Dataset is based on 1804 images from the AeroCaps and VisDrone datasets, with a total of 6668 captions. All captions were manually reviewed, and all hallucinations were tagged at the object level. A total of 217 images resulted in hallucinated objects. For the purpose of this experiment, only the images with hallucinated objects were used, and for each of those images, a binary question was generated regarding the existence of the hallucinated object in the image. To balance the dataset, for each hallucinated object, a non-hallucinated object was sampled from the same image's caption, and a binary question was generated regarding the existence of that object in the image. This resulted in a balanced dataset of 443 binary questions regarding the existence of an object in an image, with 50\% of the questions regarding hallucinated objects and 50\% regarding non-hallucinated objects.
+
+	\item \textbf{Metrics:} The standard binary classification metrics of precision, recall, F1-score, and accuracy were used to evaluate the performance of the models at a fixed decision threshold of 0.5 confidence score. Additionally, the ROC-AUC and Average Precision (AP) were used to evaluate the performance across all possible thresholds. Hallucination detection performance is measured, therefore correctly classifying a hallucination is treated as a True Positive.
+\end{description}
+
 \subsection{Binary questions for hallucination detection}
 
 % Research questions
@@ -13,17 +24,26 @@
 	Do binary questions on extracted objects successfully detect hallucinations?
 \end{formal}
 
-\subsubsection{Baseline performance}
 
-\textbf{Experimental Setting:} RS-Pope used as a benchmark. RS-Pope has balanced probing questions regarding objects, for example "Is there a building in the image". There are 3 difficulty levels in RS-Pope, here only the hardest one ("adversarial") was used. The questions for which the answer is "no" are treated as hallucinations. As the goal is to detect hallucinations, correctly answering "no" to a question is treated as a True Positive. The full prompt used is:
+% \textbf{Experimental Setting:} RS-Pope used as a benchmark. RS-Pope has balanced probing questions regarding objects, for example "Is there a building in the image". There are 3 difficulty levels in RS-Pope, here only the hardest one ("adversarial") was used. The questions for which the answer is "no" are treated as hallucinations. As the goal is to detect hallucinations, correctly answering "no" to a question is treated as a True Positive. 
 
-"Is there a \{object\} in the image?
+\subsubsection{Implementation details}
 
-A) Yes
+The prompt used throughout the experiments is as follows:
+\begin{description}
+	\item \textbf{Single token answers:} One key modification of the original POPE prompting strategy was made, which is the addition of a direct instruction to answer with "A" or "B". This essentially condenses the model's answer into a single token, which allows for direct comparison of the confidence score of the "A" token (which corresponds to "Yes") and the "B" token (which corresponds to "No"). Having a continuous confidence score allows for more nuanced evaluation of the model's performance and more detailed statistical analysis. Equivalent tokens such as ``A'', ``$\_$A'', `` A'', ``$\dot{G}$A'' were also accepted as valid answers, to account for tokenization differences between models.
 
-B) No
 
-Letter:"
+	\item \textbf{Prompting:} The full prompt used is:
+
+	      "Is there a \{object\} in the image?
+
+	      A) Yes
+
+	      B) No
+
+	      Letter:"
+\end{description}
 
 
 \begin{table}[htb] \caption{Baseline performance of binary hallucination detection with decision threshold fixed at 0.5 confidence score.} \centering
@@ -181,7 +201,7 @@ Letter:"
 		\caption{Qwen3.5 9B}
 	\end{subfigure}
 
-	\caption{\textbf{RS-Pope Performance Evaluation across models.} Row 1: Raw score distribution and separation. Row 2: Class ratio (threshold: $0.5$). Row 3: Precision-Recall (PR) Curves. Row 4: Receiver Operating Characteristic (ROC) Curves. \textcolor{red}{TODO: Leave only histogram and ROC}}
+	\caption{\textbf{RS-Pope Performance Evaluation across models. (Binary Questions)} Row 1: Raw score distribution and separation. Row 2: Class ratio (threshold: $0.5$). Row 3: Precision-Recall (PR) Curves. Row 4: Receiver Operating Characteristic (ROC) Curves. \textcolor{red}{TODO: Leave only histogram and ROC}}
 	\label{fig:rspope-all-metrics}
 \end{figure}
 
@@ -321,9 +341,10 @@ Letter:"
 		\caption{Qwen3.5 9B}
 	\end{subfigure}
 
-	\caption{\textbf{LID Performance Evaluation across models.} Row 1: Raw score distribution and separation. Row 2: Class ratio (threshold: $0.5$). Row 3: Precision-Recall (PR) Curves. Row 4: Receiver Operating Characteristic (ROC) Curves. \textcolor{red}{TODO: Leave only histogram and ROC}}
+	\caption{\textbf{LID Performance Evaluation across models. (Binary Questions)} Row 1: Raw score distribution and separation. Row 2: Class ratio (threshold: $0.5$). Row 3: Precision-Recall (PR) Curves. Row 4: Receiver Operating Characteristic (ROC) Curves. \textcolor{red}{TODO: Leave only histogram and ROC}}
 	\label{fig:lid-all-metrics}
 \end{figure}
+
 % \subsubsection{Threshold optimization}
 
 % \begin{figure}[!h]
@@ -359,11 +380,52 @@ Letter:"
 \FloatBarrier
 \subsection{Binary questions vs Multiple Choice Questions}
 
-% Research questions
 \begin{formal}
 	Are Multiple choice questions with multiple objects more suited for hallucination detection than single object binary questions?
 \end{formal}
 
+\subsubsection{Implementation details}
+To evaluate multiple choice questions for hallucination detection, the same binary questions were used as a basis, but instead of asking about the existence of a single object, the question was modified to ask about the existence of multiple objects, with one of them being the hallucinated object. To remove positional bias, the same question was asked for all permutations of the objects (capped at 1000). The final confidence scores are the average of all answers.
+
+\begin{description}
+	\item \textbf{Prompting:}
+	      In The full prompt used is:
+
+	      "What object is visible in the image?
+
+	      A) \{object 1\}
+
+	      B) \{object 2\}
+
+	      \dots
+
+	      C) \{object $n$\}
+
+	      D) None of the above
+
+	      Letter:"
+
+\end{description}
+
+
+\begin{table}[htb] \caption{Performance of hallucination detection difference between binary questions and multiple choice questions. Decision threshold fixed at 0.5 confidence score. Dataset: RSPOPE, Model: Qwen3-VL} \centering
+	\centering
+	\begin{tabular}{lllllllll} % No vertical lines
+		\toprule
+		Model     & Questions & Precision      & Recall         & F1-Score       & Accuracy       & Yes Ratio & ROC-AUC         & AP              \\
+		\midrule
+		LLaVA 1.5 & Binary    & \textbf{0.898} & \textbf{0.654} & \textbf{0.757} & \textbf{0.751} & 0.569     & \textbf{0.8794} & \textbf{0.9081} \\
+		          & MCQ       & 0.856          & 0.686          & 0.762          & 0.772          & 0.574     & 0.8570          & 0.8477          \\
+		\midrule
+		Qwen3-VL  & Binary    & \textbf{0.858} & \textbf{0.826} & \textbf{0.842} & \textbf{0.816} & 0.430     & \textbf{0.9017} & 0.9193          \\
+		          & MCQ       & 0.865          & 0.531          & 0.658          & 0.705          & 0.672     & 0.8723          & \textbf{0.9321}          \\
+		\midrule
+		Qwen3.5   & Binary    & \textbf{0.926} & \textbf{0.699} & \textbf{0.797} & \textbf{0.789} & 0.336     & \textbf{0.9177} & \textbf{0.9201} \\
+		          & MCQ       & 0.560          & 0.036          & 0.068          & 0.468          & 0.966     & 0.6187          & 0.6211          \\
+		\bottomrule
+	\end{tabular}
+	\label{tab:enghistory_clean}
+\end{table}
 \FloatBarrier
 \subsection{Effect of VCD on hallucination detection using binary questions}
 
@@ -372,14 +434,30 @@ Letter:"
 	Does VCD improve VLM hallucination detection?
 \end{formal}
 
-% \textbf{Experimental setting:} The same RS-Pope benchmark is used. VCD is used to update the logits. Below the plots are using the same parameters as the original paper.
-
 
 \subsubsection{Effect of different distortion techniques on VCD performance}
 
 \begin{formal}
 	Are certain image distortions more suitable for performing VCD on Remote Sensing images?
 \end{formal}
+
+\subsubsection{Implementation details}
+To test the effect of VCD on hallucination detection, the same binary questions were used. Each question was asked twice, once with the original image and once with the distorted image. The confidence score of the original image was then updated based on the confidence score of the distorted image, using the VCD formula.
+\begin{description}
+	\item \textbf{Distortion types:}
+	      \begin{description}
+		      \item \textbf{Diffusion} Like in the original VCD paper, a forward diffusion model was used to introduce noise to the images. The implementation was taken directly from the official VCD GitHub repository.
+		      \item \textbf{Gaussian noise} Similar to diffusion, Gaussian noise was added to the images, but without the iterative process of diffusion. The noise was added directly to the pixel values of the image.
+		      \item \textbf{Speckle} Speckle was added by multiplying the pixel values of the image with random values drawn from a uniform distribution.
+		      \item \textbf{ColorMAE Masking} The ColorMAE masking strategy allows to create different masking patterns that approximate different masking patterns popular for masked auto-encoders, such as block-wise masking, random masking, and grid-wise masking very cheaply. Essentially, different filters are applied to a white noise image and the resulting patterns are used as masks.
+	      \end{description}
+
+\end{description}
+
+
+% \textbf{Experimental setting:} The same RS-Pope benchmark is used. VCD is used to update the logits. Below the plots are using the same parameters as the original paper.
+
+
 
 \begin{todo}
 	TODO:
@@ -432,17 +510,47 @@ Letter:"
 \end{figure}
 \FloatBarrier
 
+% \subsection{MCQ}
+% \begin{table}[htpb]
+% 	\centering
+% 	\caption{RSPOPE MCQ Metrics (Confidence Visible)}
+% 	\label{tab:metrics_confidence}
+% 	\begin{tabular}{@{}lcccccc@{}}
+% 		\toprule
+% 		               & \textbf{AUROC} & \textbf{AURAC} & \textbf{F1 (0.5)} & \textbf{Rej F1 (0.5)} & \textbf{Recall (0.5)} & \textbf{Yes Ratio (0.5)} \\ \midrule
+% 		\textbf{Score} & 0.8723         & 0.7985         & 0.7408            & 0.6583                & 0.9046                & 0.6716                   \\ \bottomrule
+% 	\end{tabular}
+% \end{table}
+
 \subsection{Semantic entropy performance}
 
 \begin{formal}
 	Is Semantic Entropy a viable strategy for rejecting hallucinations for Remote Sensing images?
 \end{formal}
 
+\subsubsection{Dataset and Evaluation metrics}
+
+
+\begin{description}
+	\item \textbf{Git-10M} is a dataset of 10 million image-caption pairs covering a wide variety of remote sensing imagery. The images span multiple continents and varied scenery. Most images were taken from Google Earth. The captions were generated with GPT-4o. In comparison with other datasets, the captions were generated with very little metadata, such as location or simple keywords such as "airport". The captions therefore seem to be more visually descriptive.
+\end{description}
+
+
+
 \subsubsection{Semantic entropy for VQA hallucination detection}
 
 \begin{formal}
 	Is Semantic Entropy a viable strategy for rejecting hallucinations for Remote Sensing VQA?
 \end{formal}
+
+
+\subsubsection{Implementation details}
+
+\begin{description}
+	\item \textbf{Visual Question Generation:} For each image, Qwen3.5 was prompted to extract all the described objects from the caption. For each extracted object, a question was generated for which the object is the correct answer, for example for the object ``rocky terrain'' the question ``What hard, uneven geological formations cover parts of the landscape?'' might be generated.
+
+	\item \textbf{Semantic Entropy Calculation:} The generated questions were then asked the model 11 times. Ten answers are generated with a high temperature of 1, and one answer is generated with a temperature of 0.1 (deemed as the "best" answer). All 11 answers are then checked for bidirectional entailment and semantic groups are formed. From these groups a semantic entropy score is calculated, which is a measure of the diversity of the answers. The low-temperature "best" answer is then compared to the original extracted object to determine correctness.
+\end{description}
 
 \begin{table}[htb] \caption{Performance of semantic entropy for VQA questions of DDFAV} \centering
 \end{table}
@@ -453,11 +561,28 @@ Letter:"
 		\toprule
 		Dataset & Model   & Total Samples & Base Accuracy & AUROC  & AURAC  & Max F1 & Max Rejection F1 \\
 		\midrule
-		RSPOPE  & Qwen3.5 & 3877          & 0.6312        & 0.7673 & 0.8080 & 0.8019 & 0.6318           \\
+		Git10M  & Qwen3.5 & 3877          & 0.6312        & 0.7673 & 0.8080 & 0.8019 & 0.6318           \\
 		\bottomrule
 	\end{tabular}
 	\label{tab:semantic_entropy_object_vqa }
 \end{table}
+
+% \begin{easylist}
+% 	& Here discrete semantic entropy is used
+% 	& I am still unsure if the acceptable performance comes purely from the questions containing too much information
+% 	& I want to repeat the experiment without the images, to see if the model is actually using the visual information
+% 	& I need to understand how the clustering is working, and perform soe sort of statistical analysis on it
+% \end{easylist}
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.95\linewidth]{img/chapter5/qwen3.5/se_git10m/se_combined_evaluation.pdf}
+	% 	\resizebox{\linewidth}{!}{%
+	% 		\input{img/chapter2/binary_prf_thresholds.pgf}%
+	% 	}
+	\caption{\textbf{Semantic Entropy on Git10M with Qwen3.5}}
+	% \label{fig:test}
+\end{figure}
 
 \FloatBarrier
 \subsubsection{Semantic entropy for hallucination detection in captions}

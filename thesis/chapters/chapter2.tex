@@ -31,6 +31,7 @@
 \begin{easylist}
 	& As VLMs were already motivated in the previous section, here we just go through the foundational paper going from ViT and CLIP all the way to modern VLMs/MLMs (Qwen3Vl and Qwen3.5)
 	& ViT \autocite{dosovitskiyImageWorth16x162020}
+	&& 
 	& CLIP \autocite{radfordLearningTransferableVisual2021}
 	& SigLIP \autocite{zhaiSigmoidLossLanguage2023}
 	& SigLIP 2 \autocite{tschannenSigLIP2Multilingual2025}
@@ -42,6 +43,27 @@
 	& DeepStack \autocite{mengDeepStackDeeplyStacking2024}
 	& Qwen3-VL \autocite{baiQwen3VLTechnicalReport2025}
 	& Qwen 3.5 \autocite{teamQwen35OmniTechnicalReport2026}
+
+
+
+The foundation of the current computer vision landscape, especially regarding image-to-text models, is laid by vision transformers (ViT). Vision transformers stem directly from the transformer architecture that has been dominant in the field of natural language processing. The standard Transformer avoids recurrence and convolutions, processing entire text sequences globally through attention mechanisms. ViT replicates this by splitting a 2D image into a grid of fixed-size patches (e.g., 16×16 pixels) and treating each patch as a single token in a sequence. The ViT architecture strictly follows the original NLP Transformer model, intentionally avoiding image-specific structural biases. 
+
+The first step is patch embedding, this step is the only one that was changed in order to accommodate visual input. The original image is flattened into a sequence of patches, projected into a latent dimension $D$ via a linear matrix $\mathbf{E}$, and appended with a learnable classification token $\mathbf{x}_{class}$ alongside 1D positional embeddings $\mathbf{E}_{pos}$. 
+$$\mathbf{z}_{0} = [\mathbf{x}_{class}; \mathbf{x}_{p}^{1}\mathbf{E};\mathbf{x}_{p}^{2}\mathbf{E};\mathbf{x}_{p}^{N}\mathbf{E}]+\mathbf{E}_{\text{pos}}$$
+As in the standard transformer, the sequence is passed through $L$ alternating layers of Multi-Head Self-Attention (MSA) and a Multilayer Perceptron (MLP). Layer Normalization (LN) is applied before every block, and residual connections are applied after. 
+$$\mathbf{z}_{l}' = \text{MSA}(\text{LN}(\mathbf{z}_{l-1})) + \mathbf{z}_{l-1}$$
+The final representation used for image classification is derived exclusively from the state of the classification token at the final layer $L$. 
+
+$$\mathbf{y} = \text{LN}(\mathbf{z}_{L}^{0})$$
+ViT presents a simple architecture that, unlike CNNs, does not introduce any structural biases such as locality. A ViT must therefore learn all spatial relations directly from the data from scratch. In practice, this means that ViTs are data-hungry and need large-scale training to overtake the performance of standard CNNs.
+
+In essence, standard vision transformers compress an image into a latent dimension to classify it into fixed categories. CLIP (Contrastive Language-Image Pretraining) takes this one step forward and creates a shared latent dimension where both images and text can coexist together. Instead of just processing an image, CLIP uses two separate neural networks simultaneously: an image encoder $f_{\theta}$ (e.g. a ViT) and a text encoder $g_{\phi}$ (e.g. a transformer). The two encoders generate intermediate feature representations: 
+$$\mathbf{h}_{I} = f_{\theta}(I), \mathbf{h}_{T} = g_{\phi}(T) $$Crucially, both encoders are forced to project their final inputs into the same shared latent dimension. Becuase $\mathbf{h}_{I}$ and $\mathbf{h}_{T}$ may have different dimensions, they are multiplied by learned linear projection matrices ($\mathbf{W}_{I}$ and $\mathbf{W}_{T}$) to force them into the same shape. They are then L2-normalized so that only their direction matters. $$\mathbf{z}_{I} = \frac{\mathbf{h}_{I}\mathbf{W}_{I}}{||\mathbf{h}_{I}W_{I}||_{2}}, \mathbf{z}_{T} = \frac{\mathbf{h}_{T}\mathbf{W}_{T}}{||\mathbf{h}_{T}W_{T}||_{2}},$$
+
+Once both modalities share the same space $\mathbb{R}^d$, the model can directly compare how closely the image matches the text by computing their cosine similarity. This simplifies to a dot product because the vectors are normalized:
+% $$Similarity = \mathbf{z}_{I} \cdot\mathbf{z}_{T}$$
+In other words, in CLIP's shared latent dimension, the visual concept of some object and the written word for the same object become mathematically identical. 
+
 \end{easylist}
 
 \subsection{Remote Sensing Image Captioning}
